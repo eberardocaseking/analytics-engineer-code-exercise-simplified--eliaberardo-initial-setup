@@ -1,5 +1,9 @@
 
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    unique_key='capsule_id'
+) }}
+
 
 
 SELECT  

@@ -3,7 +3,6 @@
     unique_key='core_id'
 ) }}
 
--- Stage 1: load raw cores
 WITH cores_raw AS (
     SELECT
         id as core_id,
@@ -25,7 +24,7 @@ WITH cores_raw AS (
     FROM {{ source('public', 'cores') }}
 ),
 
--- Stage 2: Flatten launches JSON array
+-- Flatten launches JSON array
 launches_flat AS (
     SELECT
         c.core_id,
@@ -35,7 +34,7 @@ launches_flat AS (
     WHERE c.launches IS NOT NULL
 )
 
--- Stage 3: Combine
+--Combine
 SELECT
     c.core_id,
     c.serial,

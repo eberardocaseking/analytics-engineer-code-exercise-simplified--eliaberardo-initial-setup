@@ -1,5 +1,7 @@
-
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    unique_key='rocket_id'
+) }}
 
 
 with rockets_raw as (

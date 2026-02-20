@@ -1,6 +1,12 @@
     
 {{ config(materialized='table') }}
 
+{{ config(
+    materialized='table',
+    unique_key='landpad_id'
+) }}
+
+
 SELECT 
     id AS landpads_id,
     name AS landpads_name,

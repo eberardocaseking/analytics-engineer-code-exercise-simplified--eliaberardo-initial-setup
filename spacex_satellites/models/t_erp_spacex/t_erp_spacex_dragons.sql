@@ -1,4 +1,9 @@
-{{ config(materialized='table') }}
+
+{{ config(
+    materialized='table',
+    unique_key='dragon_id'
+) }}
+
 
 SELECT 
     id AS dragon_id,

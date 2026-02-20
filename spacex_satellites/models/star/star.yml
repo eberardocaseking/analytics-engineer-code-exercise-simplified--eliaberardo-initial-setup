@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: f_spacex_launches_kpis
+    columns:
+      - name: launch_id
+      - name: satellite_id
+      - name: is_in_orbit
+      - name: launch_date_utc
+      - name: payloads_name
+      - name: cumulative_deployed
+  - name: f_starlink_orbit_projection
+    columns:
+      - name: launch_id
+      - name: launch_name
+      - name: launch_date
+      - name: launch_number
+      - name: satellites_deployed
+      - name: satellites_in_orbit
+      - name: cumulative_deployed
+      - name: cumulative_in_orbit
+      - name: is_projected

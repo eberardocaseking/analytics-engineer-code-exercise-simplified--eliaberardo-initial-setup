@@ -3,68 +3,68 @@
     unique_key='launch_id'
 ) }}
 
--- Stage 1: load raw launches
-with launches_raw as (
-    select
-        id as launch_id,
-        name as launch_name,
-        date_utc as launch_date_utc,
-        success as launch_success,
-        net as launch_net,
-        "window" as launch_window,   -- reserved keyword
-        upcoming as launch_upcoming,
-        payloads as launch_payloads, -- jsonb[] array
-        cores as launch_cores,       -- jsonb[] array of objects
-        capsules as launch_capsules, -- jsonb[] array
-        crew as launch_crew,         -- jsonb[] array
-        failures as launch_failures,
-        links as launch_links
-    from public.launches
+--load raw launches
+WITH launches_raw AS (
+    SELECT
+        id AS launch_id,
+        name AS launch_name,
+        date_utc AS launch_date_utc,
+        success AS launch_success,
+        net AS launch_net,
+        "window"AS launch_window,   -- reserved keyword
+        upcoming AS launch_upcoming,
+        payloads AS launch_payloads, -- jsonb[] array
+        cores AS launch_cores,    -- jsonb[] array of objects
+        capsules AS launch_capsules, -- jsonb[] array
+        crew AS launch_crew,     -- jsonb[] array
+        failures AS launch_failures,
+        links AS launch_links
+    FROM {{ source('public', 'launches') }}
 ),
 
--- Stage 2: Flatten payloads (jsonb[] of strings)
-payloads_flat as (
-    select
+--  Flatten payloads (jsonb[] of strings)
+payloads_flat AS (
+    SELECT
         l.launch_id,
-        pw #>> '{}' as payload_id
-    from launches_raw l,
-         lateral unnest(l.launch_payloads) as pw
+        pw #>> '{}' AS payload_id
+    FROM launches_raw l,
+         LATERAL UNNEST(l.launch_payloads) AS pw
 ),
 
--- Stage 3: Flatten cores (jsonb[] of objects)
-cores_flat as (
-    select
+-- Flatten cores (jsonb[] of objects)
+cores_flat AS (
+    SELECT
         l.launch_id,
-        core_json->>'core' as core_id,
-        (core_json->>'flight')::int as core_flight,
-        (core_json->>'landing_success')::boolean as landing_success
-    from launches_raw l,
-         lateral unnest(l.launch_cores) as core_json
-    where l.launch_cores is not null
+        core_json->>'core' AS core_id,
+        (core_json->>'flight')::INT AS core_flight,
+        (core_json->>'landing_success')::BOOLEAN AS landing_success
+    FROM launches_raw l,
+         LATERAL UNNEST(l.launch_cores) AS core_json
+    WHERE l.launch_cores IS NOT NULL
 ),
 
--- Stage 4: Flatten capsules (jsonb[] of strings)
-capsules_flat as (
-    select
+--  Flatten capsules (jsonb[] of strings)
+capsules_flat AS (
+    SELECT
         l.launch_id,
-        caps #>> '{}' as capsule_id
-    from launches_raw l,
-         lateral unnest(l.launch_capsules) as caps
-    where l.launch_capsules is not null
+        caps #>> '{}' AS capsule_id
+    FROM launches_raw l,
+         LATERAL UNNEST(l.launch_capsules) AS caps
+    WHERE l.launch_capsules IS NOT NULL
 ),
 
--- Stage 5: Flatten crew (jsonb[] of strings)
-crew_flat as (
-    select
+--  Flatten crew (jsonb[] of strings)
+crew_flat AS (
+    SELECT
         l.launch_id,
-        cr #>> '{}' as crew_id
-    from launches_raw l,
-         lateral unnest(l.launch_crew) as cr
-    where l.launch_crew is not null
+        cr #>> '{}' AS crew_id
+    FROM launches_raw l,
+         LATERAL UNNEST(l.launch_crew) AS cr
+    WHERE l.launch_crew IS NOT NULL
 )
 
--- Stage 6: Combine all into staging table
-select
+--  Combine all into staging table
+SELECT
     l.launch_id,
     l.launch_name,
     l.launch_date_utc,
@@ -80,8 +80,12 @@ select
     c.landing_success,
     cap.capsule_id,
     cr.crew_id
-from launches_raw l
-left join payloads_flat p on l.launch_id = p.launch_id
-left join cores_flat c on l.launch_id = c.launch_id
-left join capsules_flat cap on l.launch_id = cap.launch_id
-left join crew_flat cr on l.launch_id = cr.launch_id
+FROM launches_raw l
+LEFT JOIN payloads_flat  p
+    ON l.launch_id = p.launch_id
+LEFT JOIN cores_flat     c
+    ON l.launch_id = c.launch_id
+LEFT JOIN capsules_flat  cap 
+    ON l.launch_id = cap.launch_id
+LEFT JOIN crew_flat      cr 
+    ON l.launch_id = cr.launch_id
