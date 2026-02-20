@@ -1,0 +1,41 @@
+{{ config(materialized='table') }}
+
+
+SELECT
+    id AS payloads_id,
+    name AS payloads_name,
+    type AS payloads_type,
+    reused AS payloads_reused,
+    launch AS payloads_launch,
+    customers AS payloads_customers,
+    norad_ids AS payloads_norad_ids,
+    nationalities AS payloads_nationalities,
+    manufacturers AS payloads_manufacturers,
+    mass_kg AS payloads_mass_kg,
+    mass_lbs AS payloads_mass_lbs,
+    orbit AS payloads_orbit,
+    reference_system AS payloads_reference_system,
+    regime AS payloads_regime,
+    longitude AS payloads_longitude,
+    semi_major_axis_km AS payloads_semi_major_axis_km,
+    eccentricity AS payloads_eccentricity,
+    periapsis_km AS payloads_periapsis_km,
+    apoapsis_km AS payloads_apoapsis_km,
+    inclination_deg AS payloads_inclination_deg,
+    period_min AS payloads_period_min,
+    lifespan_years AS payloads_lifespan_years,
+    epoch AS payloads_epoch,
+    mean_motion AS payloads_mean_motion,
+    raan AS payloads_raan,
+    arg_of_pericenter AS payloads_arg_of_pericenter,
+    mean_anomaly AS payloads_mean_anomaly,
+    dragon AS payloads_dragon,
+    _sdc_extracted_at AS payloads_sdc_extracted_at,
+    _sdc_received_at AS payloads_sdc_received_at,
+    _sdc_batched_at AS payloads_sdc_batched_at,
+    _sdc_deleted_at AS payloads_sdc_deleted_at,
+    _sdc_sequence AS payloads_sdc_sequence,
+    _sdc_table_version AS payloads_sdc_table_version,
+    _sdc_sync_started_at AS payloads_sdc_sync_started_at
+
+    FROM {{ source('public', 'payloads') }} 
