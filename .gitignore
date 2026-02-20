@@ -1,0 +1,9 @@
+# DBT
+logs/
+target/
+dbt_packages/
+.user.yml
+
+# Environments
+.env
+.env/

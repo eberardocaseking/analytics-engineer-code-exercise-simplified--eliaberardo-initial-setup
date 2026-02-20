@@ -1,0 +1,21 @@
+spacex_satellites:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: db
+      port: 5432
+      dbname: "{{ env_var('POSTGRES_DEV_DBNAME') }}"
+      schema: public
+      user: "{{ env_var('POSTGRES_DEV_USER') }}"
+      pass: "{{ env_var('POSTGRES_DEV_PASS') }}"
+      threads: 1
+    local:
+      type: postgres
+      host: localhost
+      port: 5432
+      dbname: postgres
+      schema: public
+      user: local_dev
+      pass: local_dev
+      threads: 1

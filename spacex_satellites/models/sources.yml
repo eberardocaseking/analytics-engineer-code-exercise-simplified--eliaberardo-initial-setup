@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: public
+    schema: public
+    tables:
+      - name: capsules
+      - name: company
+      - name: cores
+      - name: crew
+      - name: dragons
+      - name: history
+      - name: landpads
+      - name: launches
+      - name: launchpads
+      - name: payloads
+      - name: roadster
+      - name: rockets
+      - name: ships
+      - name: starlink

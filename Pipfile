@@ -1,0 +1,10 @@
+[packages]
+dbt-core = "~=1.8.8"
+dbt-postgres = "~=1.8.2"
+
+[dev-packages]
+sqlfluff = "*"
+sqlfluff-templater-dbt = "*"
+
+[requires]
+python_version = "3.10"

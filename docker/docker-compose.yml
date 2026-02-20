@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      # Use new recommended mount point for PostgreSQL 18+ compatibility
+      - postgres_data:/var/lib/postgresql
+      - ./raw/sample-db.sql:/docker-entrypoint-initdb.d/sample-db.sql  # insert data during the db start
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  dbt:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dbt
+    container_name: dbt_dev
+    restart: "no"
+    working_dir: /workspace
+    environment:
+      POSTGRES_DEV_DBNAME: ${POSTGRES_DB}
+      POSTGRES_DEV_USER: ${POSTGRES_USER}
+      POSTGRES_DEV_PASS: ${POSTGRES_PASSWORD}
+    volumes:
+      - ../:/workspace
+      - dbt_packages:/workspace/spacex_satellites/dbt_packages
+      - dbt_target:/workspace/spacex_satellites/target
+    depends_on:
+      db:
+        condition: service_healthy
+    command: tail -f /dev/null
+
+volumes:
+  postgres_data:  # Named volume that persists across container recreations
+  dbt_packages:  # dbt packages cache
+  dbt_target:    # dbt target/build artifacts
+

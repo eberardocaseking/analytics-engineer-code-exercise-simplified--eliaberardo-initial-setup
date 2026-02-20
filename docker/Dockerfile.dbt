@@ -1,0 +1,21 @@
+FROM python:3.10-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install pipenv
+RUN pip install --upgrade pip pipenv
+
+# Set working directory
+WORKDIR /workspace
+
+# Copy Pipfile and Pipfile.lock for dependency installation
+COPY Pipfile Pipfile.lock ./
+
+# Install Python dependencies
+RUN pipenv install --dev --system
+
+# Default command
+CMD ["/bin/bash"]
