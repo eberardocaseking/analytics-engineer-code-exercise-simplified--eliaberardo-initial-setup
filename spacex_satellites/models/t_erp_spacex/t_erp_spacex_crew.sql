@@ -1,19 +1,37 @@
-{{ config(materialized='table') }}
-SELECT 
 
-    id AS member_id,
-    name,
-    status,
-    agency,
-    image,
-    wikipedia,
-    launches,
-    _sdc_extracted_at AS extracted_at,
-    _sdc_received_at AS received_at,
-    _sdc_batched_at AS batched_at,
-    _sdc_deleted_at AS deleted_at,
-    _sdc_sequence AS sequence,
-    _sdc_table_version AS table_version,
-    _sdc_sync_started_at
+{{ config(
+    materialized='table',
+    unique_key='crew_id'
+) }}
 
-FROM {{ source('public', 'crew') }} 
+WITH crew_raw AS (
+    SELECT
+        id AS crew_id,
+        name,
+        status,
+        agency,
+        image,
+        wikipedia,
+        launches
+     FROM {{ source('public', 'crew') }}
+),
+
+launches_flat AS (
+    SELECT
+        c.crew_id,
+        lj #>> '{}' AS launch_id
+    FROM crew_raw c,
+         LATERAL unnest(c.launches) AS lj
+    WHERE c.launches IS NOT NULL
+)
+
+SELECT
+    c.crew_id,
+    c.name,
+    c.status,
+    c.agency,
+    c.image,
+    c.wikipedia,
+    lf.launch_id
+FROM crew_raw c
+LEFT JOIN launches_flat lf ON c.crew_id = lf.crew_id

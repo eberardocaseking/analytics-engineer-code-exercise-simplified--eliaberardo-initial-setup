@@ -1,9 +1,6 @@
 
 {{ config(materialized='table') }}
 
-{{ config(
-    materialized='table'
-) }}
 
 with rockets_raw as (
     select
