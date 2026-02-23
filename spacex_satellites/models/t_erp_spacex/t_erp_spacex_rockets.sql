@@ -4,46 +4,69 @@
 ) }}
 
 
-with rockets_raw as (
-    select
-        id as rocket_id,
-        name as rocket_name,
+WITH rockets_raw AS (
+    SELECT
+        id AS rocket_id,
+        name AS rocket_name,
+        active,
+        cost_per_launch,
+        success_rate_pct,
         first_flight,
-        height,
-        diameter,
         stages,
+        description,
         engines,
         payload_weights
-    FROM {{ source('public', 'rockets') }} 
+    FROM {{ source('public', 'rockets') }}
 ),
 
 -- Flatten payloads per orbit
-payload_flat as (
-    select
+payload_flat AS (
+    SELECT
         rocket_id,
         rocket_name,
+        active,
+        cost_per_launch,
+        success_rate_pct,
         first_flight,
-        height,
-        diameter,
         stages,
+        description,
         -- Engines: extract from JSON object
-        (engines->>'number')::int as engines_number,
-        engines->>'type' as engines_type,
-        engines->>'version' as engines_version,
-        engines->>'layout' as engines_layout,
-        (engines->'isp'->>'sea_level')::int as isp_sea_level,
-        (engines->'isp'->>'vacuum')::int as isp_vacuum,
-        (engines->>'engine_loss_max')::int as engine_loss_max,
+        (engines->>'number')::INT AS engines_number,
+        engines->>'type' AS engines_type,
+        engines->>'version' AS engines_version,
+        engines->>'layout' AS engines_layout,
+        (engines->'isp'->>'sea_level')::INT AS isp_sea_level,
+        (engines->'isp'->>'vacuum')::INT AS isp_vacuum,
+        (engines->>'engine_loss_max')::INT AS engine_loss_max,
         -- Payloads: flatten JSON array
-        max(case when pw->>'id' = 'leo' then (pw->>'kg')::int end) as payload_leo_kg,
-        max(case when pw->>'id' = 'leo' then (pw->>'lb')::int end) as payload_leo_lb,
-        max(case when pw->>'id' = 'gto' then (pw->>'kg')::int end) as payload_gto_kg,
-        max(case when pw->>'id' = 'gto' then (pw->>'lb')::int end) as payload_gto_lb
-    from rockets_raw,
-         lateral unnest(payload_weights) as pw
-    group by rocket_id, rocket_name, first_flight, height, diameter, stages, engines
+        MAX(CASE WHEN pw->>'id' = 'leo' THEN (pw->>'kg')::INT END) AS payload_leo_kg,
+        MAX(CASE WHEN pw->>'id' = 'leo' THEN (pw->>'lb')::INT END) AS payload_leo_lb,
+        MAX(CASE WHEN pw->>'id' = 'gto' THEN (pw->>'kg')::INT END) AS payload_gto_kg,
+        MAX(CASE WHEN pw->>'id' = 'gto' THEN (pw->>'lb')::INT END) AS payload_gto_lb
+    FROM rockets_raw,
+         LATERAL UNNEST(payload_weights) AS pw
+    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 )
 
-select *
-from payload_flat
-order by rocket_id
+SELECT
+    rocket_id,
+    rocket_name,
+    active,
+    cost_per_launch,
+    success_rate_pct,
+    first_flight,
+    stages,
+    description,
+    engines_number,
+    engines_type,
+    engines_version,
+    engines_layout,
+    isp_sea_level,
+    isp_vacuum,
+    engine_loss_max,
+    payload_leo_kg,
+    payload_leo_lb,
+    payload_gto_kg,
+    payload_gto_lb
+FROM payload_flat
+ORDER BY rocket_id

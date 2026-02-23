@@ -8,8 +8,7 @@ models:
       - name: is_in_orbit
       - name: launch_date_utc
       - name: payloads_name
-      - name: cumulative_deployed
-  - name: f_starlink_orbit_projection
+  - name: f_starlink_projection_kpis
     columns:
       - name: launch_id
       - name: launch_name

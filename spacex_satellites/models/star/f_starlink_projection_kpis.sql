@@ -8,12 +8,12 @@ satellite_facts AS (
     SELECT DISTINCT
         launch_id,
         launch_name,
-        launch_date_utc::DATE   AS launch_date,
+        launch_date_utc::DATE AS launch_date,
         satellite_id,
         is_in_orbit
     FROM {{ ref('f_spacex_launches_kpis') }}
     WHERE launch_success = true
-      AND satellite_id   IS NOT NULL
+      AND satellite_id IS NOT NULL
 ),
 
 --– aggregate to one row per launch
@@ -49,31 +49,31 @@ historical AS (
 -- projection parameters: overall averages across all historical launches
 projection_params AS (
     SELECT
-        MAX(launch_date)                                             AS last_launch_date,
-        MAX(launch_number)                                           AS last_launch_number,
-        MAX(cumulative_deployed)                                     AS last_cumulative_deployed,
-        MAX(cumulative_in_orbit)                                     AS last_cumulative_in_orbit,
-        AVG(satellites_deployed)::FLOAT                              AS avg_deployed_per_launch,
-        AVG(satellites_in_orbit)::FLOAT                              AS avg_in_orbit_per_launch,
+        MAX(launch_date) AS last_launch_date,
+        MAX(launch_number) AS last_launch_number,
+        MAX(cumulative_deployed) AS last_cumulative_deployed,
+        MAX(cumulative_in_orbit) AS last_cumulative_in_orbit,
+        AVG(satellites_deployed)::FLOAT AS avg_deployed_per_launch,
+        AVG(satellites_in_orbit)::FLOAT AS avg_in_orbit_per_launch,
         -- Average days between consecutive launches
         (MAX(launch_date) - MIN(launch_date))::FLOAT
-            / NULLIF(MAX(launch_number) - 1, 0)                      AS avg_days_between_launches
+            / NULLIF(MAX(launch_number) - 1, 0) AS avg_days_between_launches
     FROM historical
 ),
 
 -- generate projected future launches (up to 1500 to cover the gap to 42k)
 projected AS (
     SELECT
-        gs.n                                                         AS n,
+        gs.n AS n,
         pp.last_launch_date
-            + (gs.n * pp.avg_days_between_launches)::INT             AS launch_date,
-        pp.last_launch_number + gs.n                                 AS launch_number,
-        pp.avg_deployed_per_launch::INT                              AS satellites_deployed,
-        pp.avg_in_orbit_per_launch::INT                              AS satellites_in_orbit,
+            + (gs.n * pp.avg_days_between_launches)::INT AS launch_date,
+        pp.last_launch_number + gs.n AS launch_number,
+        pp.avg_deployed_per_launch::INT AS satellites_deployed,
+        pp.avg_in_orbit_per_launch::INT AS satellites_in_orbit,
         (pp.last_cumulative_deployed
-            + gs.n * pp.avg_deployed_per_launch)::INT                AS cumulative_deployed,
+            + gs.n * pp.avg_deployed_per_launch)::INT AS cumulative_deployed,
         (pp.last_cumulative_in_orbit
-            + gs.n * pp.avg_in_orbit_per_launch)::INT                AS cumulative_in_orbit
+            + gs.n * pp.avg_in_orbit_per_launch)::INT AS cumulative_in_orbit
     FROM projection_params pp
     CROSS JOIN GENERATE_SERIES(1, 1500) AS gs(n)
 ),
@@ -95,21 +95,21 @@ SELECT
     satellites_in_orbit,
     cumulative_deployed,
     cumulative_in_orbit,
-    false                                                            AS is_projected
+    false AS is_projected
 FROM historical
 
 UNION ALL
 
 SELECT
-    NULL                                                             AS launch_id,
-    'Projected Launch #' || launch_number                            AS launch_name,
+    NULL AS launch_id,
+    'Projected Launch #' || launch_number AS launch_name,
     launch_date,
     launch_number,
     satellites_deployed,
     satellites_in_orbit,
     cumulative_deployed,
     cumulative_in_orbit,
-    true                                                             AS is_projected
+    true AS is_projected
 FROM projected_trimmed
 
 ORDER BY launch_date

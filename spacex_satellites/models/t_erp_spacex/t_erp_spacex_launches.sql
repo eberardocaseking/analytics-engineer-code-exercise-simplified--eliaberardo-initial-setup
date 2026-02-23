@@ -17,8 +17,8 @@ WITH launches_raw AS (
         cores AS launch_cores,    -- jsonb[] array of objects
         capsules AS launch_capsules, -- jsonb[] array
         crew AS launch_crew,     -- jsonb[] array
-        failures AS launch_failures,
-        links AS launch_links
+        failures AS launch_failures
+
     FROM {{ source('public', 'launches') }}
 ),
 
@@ -37,7 +37,8 @@ cores_flat AS (
         l.launch_id,
         core_json->>'core' AS core_id,
         (core_json->>'flight')::INT AS core_flight,
-        (core_json->>'landing_success')::BOOLEAN AS landing_success
+        (core_json->>'landing_success')::BOOLEAN AS landing_success,
+        core_json->>'landpad' AS landpad_id
     FROM launches_raw l,
          LATERAL UNNEST(l.launch_cores) AS core_json
     WHERE l.launch_cores IS NOT NULL
@@ -73,11 +74,11 @@ SELECT
     l.launch_window,
     l.launch_upcoming,
     l.launch_failures,
-    l.launch_links,
     p.payload_id,
     c.core_id,
     c.core_flight,
     c.landing_success,
+    c.landpad_id,
     cap.capsule_id,
     cr.crew_id
 FROM launches_raw l

@@ -10,8 +10,6 @@ SELECT
     l.launch_net,
     l.launch_window,
     l.launch_upcoming,
-    l.launch_failures,
-    l.launch_links,
 
     -- Payload
     p.payloads_id,
@@ -28,6 +26,11 @@ SELECT
     l.core_id,
     l.core_flight,
     l.landing_success,
+    l.landpad_id,
+    lp.landpads_name AS landpad_name,
+    lp.landpads_type AS landpad_type,
+    lp.landpads_locality AS landpad_locality,
+    lp.landpads_landing_success_pct,
     c.serial AS core_serial,
     c.status AS core_status,
     c.rtls_landings,
@@ -62,6 +65,8 @@ LEFT JOIN {{ ref('t_erp_spacex_core') }} c
     ON l.core_id = c.core_id
 LEFT JOIN {{ ref('t_erp_spacex_capsule') }} cap
     ON l.capsule_id = cap.capsule_id
+LEFT JOIN {{ ref('t_erp_spacex_landpads') }} lp
+    ON l.landpad_id = lp.landpads_id
 LEFT JOIN {{ ref('t_erp_spacex_starlink') }} sl
     ON p.norad_id = sl.st_norad_cat_id
 

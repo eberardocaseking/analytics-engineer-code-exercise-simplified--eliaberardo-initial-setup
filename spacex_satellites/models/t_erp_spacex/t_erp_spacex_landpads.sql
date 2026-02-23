@@ -19,7 +19,7 @@ SELECT
     longitude AS landpads_longitude,
     landing_attempts AS landpads_landing_attempts,
     landing_successes AS landpads_landing_successes,
-    wikipedia AS landpads_wikipedia,
+    ROUND(100.0 * landing_successes / NULLIF(landing_attempts, 0), 1) AS landpads_landing_success_pct,
     details AS landpads_details,
     launches AS landpads_launches,
     _sdc_extracted_at AS landpads_sdc_extracted_at,
