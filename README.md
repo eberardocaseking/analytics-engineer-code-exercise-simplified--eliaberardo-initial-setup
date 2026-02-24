@@ -152,11 +152,12 @@ The table combines two parts:
 - Projected rows (is_projected = true): future launches extrapolated using the average number of satellites per launch and the average number of days between launches, continuing until cumulative_in_orbit reaches 42,000
 
 To get the answer directly from the table:
-## sql
+```sql
 SELECT launch_date, launch_number, cumulative_in_orbit
 FROM f_starlink_projection_kpis
 WHERE cumulative_in_orbit >= 42000
 ORDER BY launch_number
+```
 
 ## context
 While working on the challenge, I conducted some research to better understand  terms such as payloads, landpads, launchpads, and ships. Having a clearer understanding of how satellites are launched into orbit helped me design the model more accurately. Without this context, it would have been much more difficult to complete the task correctly.
