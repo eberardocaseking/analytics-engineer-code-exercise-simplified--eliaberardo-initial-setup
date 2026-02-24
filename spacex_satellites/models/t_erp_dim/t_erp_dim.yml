@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: t_erp_dim_time
+    description: Date dimension table covering 2000-01-01 through current_date + 3 years
+    columns:
+      - name: sk_time_id
+        description: Surrogate key in YYYYMMDD integer format
+      - name: _date
+        description: Calendar date
+      - name: day
+        description: Day of the month
+      - name: month
+        description: Month number
+      - name: quarter
+        description: Quarter number
+      - name: year
+        description: Four-digit year
+      - name: calendar_week_name
+        description: ISO week number of the year
+      - name: month_description
+        description: Full month name
+      - name: quarter_description
+        description: Quarter label
+      - name: half_year
+        description: Half-year number
+      - name: half_year_descr
+        description: Half-year label
+      - name: day_n
+        description: Day of week as integer
+      - name: weekday
+        description: Day of week reordered so Monday=1, Sunday=7
+      - name: weekday_description
+        description: Full weekday name
+      - name: is_weekday
+        description: 1 if Monday-Friday, else 0
+      - name: is_working_day
+        description: 1 if Monday-Friday, else 0

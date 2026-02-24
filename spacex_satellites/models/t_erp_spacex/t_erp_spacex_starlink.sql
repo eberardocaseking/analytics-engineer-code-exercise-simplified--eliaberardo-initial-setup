@@ -5,7 +5,7 @@
 ) }}
 
 SELECT
-    -- Satellite identifiers
+    -- Satellite 
     id AS satellite_id,
     version AS satellite_version,
     launch AS satellite_launch_id,
@@ -33,10 +33,9 @@ SELECT
     ("spaceTrack"->>'PERIAPSIS')::FLOAT  AS st_periapsis_km,
     "spaceTrack"->>'RCS_SIZE'AS st_rcs_size,
 
-    -- Derived: is the satellite currently in orbit?
+    -- is in orbit?
     ("spaceTrack"->>'DECAY_DATE') IS NULL AS is_in_orbit,
 
-    -- SCD metadata
     _sdc_extracted_at AS satellite_sdc_extracted_at,
      _sdc_received_at  AS satellite_sdc_received_at,
     _sdc_batched_at  AS satellite_sdc_batched_at,

@@ -12,12 +12,12 @@ WITH date_rows AS (
 enriched AS (
     SELECT
         date_day,
-        EXTRACT(DAY FROM date_day)::int     AS day,
-        EXTRACT(MONTH FROM date_day)::int   AS month,
+        EXTRACT(DAY FROM date_day)::int AS day,
+        EXTRACT(MONTH FROM date_day)::int AS month,
         EXTRACT(QUARTER FROM date_day)::int AS quarter,
-        EXTRACT(YEAR FROM date_day)::int    AS year,
-        EXTRACT(WEEK FROM date_day)::int    AS calendar_week_name,
-        EXTRACT(DOW FROM date_day)::int     AS day_n
+        EXTRACT(YEAR FROM date_day)::int AS year,
+        EXTRACT(WEEK FROM date_day)::int AS calendar_week_name,
+        EXTRACT(DOW FROM date_day)::int AS day_n
     FROM date_rows
 )
 

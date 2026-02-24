@@ -12,18 +12,18 @@ WITH launches_raw AS (
         date_utc AS launch_date_utc,
         success AS launch_success,
         net AS launch_net,
-        "window"AS launch_window,   -- reserved keyword
+        "window"AS launch_window,   
         upcoming AS launch_upcoming,
-        payloads AS launch_payloads, -- jsonb[] array
-        cores AS launch_cores,    -- jsonb[] array of objects
-        capsules AS launch_capsules, -- jsonb[] array
-        crew AS launch_crew,     -- jsonb[] array
+        payloads AS launch_payloads, 
+        cores AS launch_cores,    
+        capsules AS launch_capsules,
+        crew AS launch_crew,  
         failures AS launch_failures
 
     FROM {{ source('public', 'launches') }}
 ),
 
---  Flatten payloads (jsonb[] of strings)
+--  Flatten payloads 
 payloads_flat AS (
     SELECT
         l.launch_id,
@@ -32,7 +32,7 @@ payloads_flat AS (
          LATERAL UNNEST(l.launch_payloads) AS pw
 ),
 
--- Flatten cores (jsonb[] of objects)
+-- Flatten cores 
 cores_flat AS (
     SELECT
         l.launch_id,
@@ -45,7 +45,7 @@ cores_flat AS (
     WHERE l.launch_cores IS NOT NULL
 ),
 
---  Flatten capsules (jsonb[] of strings)
+--  Flatten capsules 
 capsules_flat AS (
     SELECT
         l.launch_id,
@@ -53,19 +53,8 @@ capsules_flat AS (
     FROM launches_raw l,
          LATERAL UNNEST(l.launch_capsules) AS caps
     WHERE l.launch_capsules IS NOT NULL
-),
-
---  Flatten crew (jsonb[] of strings)
-crew_flat AS (
-    SELECT
-        l.launch_id,
-        cr #>> '{}' AS crew_id
-    FROM launches_raw l,
-         LATERAL UNNEST(l.launch_crew) AS cr
-    WHERE l.launch_crew IS NOT NULL
 )
 
---  Combine all into staging table
 SELECT
     l.launch_id,
     l.rocket_id,
@@ -81,14 +70,11 @@ SELECT
     c.core_flight,
     c.landing_success,
     c.landpad_id,
-    cap.capsule_id,
-    cr.crew_id
+    cap.capsule_id
 FROM launches_raw l
 LEFT JOIN payloads_flat  p
     ON l.launch_id = p.launch_id
 LEFT JOIN cores_flat     c
     ON l.launch_id = c.launch_id
-LEFT JOIN capsules_flat  cap 
+LEFT JOIN capsules_flat  cap
     ON l.launch_id = cap.launch_id
-LEFT JOIN crew_flat      cr 
-    ON l.launch_id = cr.launch_id

@@ -1,6 +1,17 @@
 version: 2
 
 models:
+  - name: d_time
+    columns:
+      - name: sk_time_id
+        tests:
+          - unique
+          - not_null
+      - name: _date
+      - name: year
+      - name: month
+      - name: quarter
+
   - name: d_spacex_rockets
     columns:
       - name: rocket_id
@@ -88,12 +99,21 @@ models:
           - not_null
   - name: f_starlink_projection_kpis
     columns:
+      - name: launch_number
+        tests:
+          - unique
+          - not_null
+      - name: launch_date
+        tests:
+          - not_null
+      - name: cumulative_in_orbit
+        tests:
+          - not_null
+      - name: is_projected
+        tests:
+          - not_null
       - name: launch_id
       - name: launch_name
-      - name: launch_date
-      - name: launch_number
       - name: satellites_deployed
       - name: satellites_in_orbit
       - name: cumulative_deployed
-      - name: cumulative_in_orbit
-      - name: is_projected

@@ -45,7 +45,7 @@ payload_flat AS (
         MAX(CASE WHEN pw->>'id' = 'gto' THEN (pw->>'lb')::INT END) AS payload_gto_lb
     FROM rockets_raw,
          LATERAL UNNEST(payload_weights) AS pw
-    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+    {{ dbt_utils.group_by(15) }}
 )
 
 SELECT

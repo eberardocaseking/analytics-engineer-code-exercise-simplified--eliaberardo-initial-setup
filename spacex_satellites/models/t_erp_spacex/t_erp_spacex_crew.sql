@@ -17,7 +17,7 @@ WITH crew_raw AS (
 ),
 
 launches_flat AS (
-    SELECT
+    SELECT DISTINCT
         c.crew_id,
         lj #>> '{}' AS launch_id
     FROM crew_raw c,

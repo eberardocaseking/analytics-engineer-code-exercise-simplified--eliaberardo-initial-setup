@@ -12,10 +12,10 @@ WITH payloads_raw AS (
         type AS payloads_type,
         reused AS payloads_reused,
         launch AS payloads_launch_id,
-        customers AS payloads_customers,       -- jsonb[] of strings
-        norad_ids AS payloads_norad_ids,       -- jsonb[] of integers
-        nationalities AS payloads_nationalities,   -- jsonb[] of strings
-        manufacturers AS payloads_manufacturers,   -- jsonb[] of strings
+        customers AS payloads_customers,      
+        norad_ids AS payloads_norad_ids,       
+        nationalities AS payloads_nationalities,   
+        manufacturers AS payloads_manufacturers,   
         mass_kg  AS payloads_mass_kg,
         mass_lbs AS payloads_mass_lbs,
         orbit AS payloads_orbit,
@@ -34,7 +34,7 @@ WITH payloads_raw AS (
         raan AS payloads_raan,
         arg_of_pericenter AS payloads_arg_of_pericenter,
         mean_anomaly AS payloads_mean_anomaly,
-        dragon AS payloads_dragon,          -- jsonb object
+        dragon AS payloads_dragon,         
         _sdc_extracted_at AS payloads_sdc_extracted_at,
         _sdc_received_at AS payloads_sdc_received_at,
         _sdc_batched_at AS payloads_sdc_batched_at,
@@ -45,7 +45,7 @@ WITH payloads_raw AS (
     FROM {{ source('public', 'payloads') }}
 ),
 
--- Flatten customers (jsonb[] of strings)
+-- Flatten customers 
 customers_flat AS (
     SELECT
         p.payloads_id,

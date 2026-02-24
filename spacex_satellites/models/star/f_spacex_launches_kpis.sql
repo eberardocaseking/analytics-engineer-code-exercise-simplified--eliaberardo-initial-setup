@@ -10,6 +10,7 @@ SELECT
     p.payloads_id,
     sl.satellite_id,
     sl.st_norad_cat_id,
+    dt.sk_time_id AS launch_date_id,
 
     -- Launch (degenerate dimension + measures)
     l.launch_name,
@@ -45,5 +46,7 @@ LEFT JOIN {{ ref('d_spacex_payloads') }} AS p
     ON l.payload_id = p.payloads_id
 LEFT JOIN {{ ref('d_spacex_starlink') }} AS sl
     ON p.norad_id = sl.st_norad_cat_id
+LEFT JOIN {{ ref('d_time') }} AS dt
+    ON dt._date = l.launch_date_utc::date
 
 WHERE p.payloads_name ILIKE 'Starlink%'

@@ -13,7 +13,7 @@ WITH cores_raw AS (
         asds_attempts,
         asds_landings,
         last_update,
-        launches,        -- JSON array of launch IDs
+        launches,       
         _sdc_extracted_at,
         _sdc_received_at,
         _sdc_batched_at,
@@ -24,7 +24,7 @@ WITH cores_raw AS (
     FROM {{ source('public', 'cores') }}
 ),
 
--- Flatten launches JSON array
+-- Flatten launches 
 launches_flat AS (
     SELECT
         c.core_id,
@@ -34,7 +34,6 @@ launches_flat AS (
     WHERE c.launches IS NOT NULL
 )
 
---Combine
 SELECT
     c.core_id,
     c.serial,

@@ -25,7 +25,7 @@ launch_stats AS (
         COUNT(*) AS satellites_deployed,
         SUM(CASE WHEN is_in_orbit THEN 1 ELSE 0 END) AS satellites_in_orbit
     FROM satellite_facts
-    GROUP BY launch_id
+    {{ dbt_utils.group_by(1) }}
 ),
 
 -- cumulative running totals across historical launches
@@ -90,6 +90,7 @@ SELECT
     launch_id,
     launch_name,
     launch_date,
+    CAST(TO_CHAR(launch_date, 'YYYYMMDD') AS integer) AS launch_date_id,
     launch_number,
     satellites_deployed,
     satellites_in_orbit,
@@ -104,6 +105,7 @@ SELECT
     NULL AS launch_id,
     'Projected Launch #' || launch_number AS launch_name,
     launch_date,
+    CAST(TO_CHAR(launch_date, 'YYYYMMDD') AS integer) AS launch_date_id,
     launch_number,
     satellites_deployed,
     satellites_in_orbit,
