@@ -132,12 +132,11 @@ At this stage, I did not apply any business logic. The goal was simply to clean 
 
 I also added a folder called t_erp_dim with a time table named t_erp_dim_time. This was not specifically requested in the challenge, but I consider it good practice to include a time dimension early on. It makes it easier to join fact tables later and allows filtering by year, month, or quarter. This table also prepares the foundation for the final d_time dimension in the star schema.
 
-2.
-Once the data layer was ready, I implemented the business logic only in the final layer of the model, which is the star schema. In this layer, I clearly defined the dimension tables and fact tables. I created a main fact table called f_spacex_launches_kpis, which can be used for general analysis related to launches, payloads, and satellites.
+2. Once the data layer was ready, I implemented the business logic only in the final layer of the model, which is the star schema. In this layer, I clearly defined the dimension tables and fact tables. I created a main fact table called f_spacex_launches_kpis, which can be used for general analysis related to launches, payloads, and satellites.
 
 In addition, I created another fact table specifically designed to answer the main question of the challenge.
 
-3.Regarding testing, I believe it is good practice to define tests in the star.yml file. For this challenge, I added tests to ensure that primary keys are unique and not null. I also added relationship tests between fact and dimension tables, making sure that all foreign keys in the fact tables exist in the corresponding dimension tables.
+3. Regarding testing, I believe it is good practice to define tests in the star.yml file. For this challenge, I added tests to ensure that primary keys are unique and not null. I also added relationship tests between fact and dimension tables, making sure that all foreign keys in the fact tables exist in the corresponding dimension tables.
 
 I set the severity of these relationship tests to warning instead of error. At this stage, I prefer to be alerted if something is missing without breaking the entire pipeline.
 
