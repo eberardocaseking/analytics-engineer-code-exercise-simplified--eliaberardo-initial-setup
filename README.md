@@ -113,3 +113,42 @@ You will be evaluated on:
 
 This section is for you to fill in with any decisions you made that may be relevant. You can also change this README to 
 fit your needs.
+
+## my thoughts
+
+here below is my approach to scope the question to answer:
+1. To begin with, I focused on making the data readable and understandable before defining fact and dimension tables. Several columns were stored as JSON text, so I converted them into cleaner, readable strings. I created a first staging layer called t_erp_spacex, which contains the following tables:
+t_erp_spacex_capsule,
+t_erp_spacex_core,
+t_erp_spacex_crew,
+t_erp_spacex_dragons,
+t_erp_spacex_landpads,
+t_erp_spacex_launches,
+t_erp_spacex_payloads,
+t_erp_spacex_rockets,
+t_erp_spacex_starlink
+
+At this stage, I did not apply any business logic. The goal was simply to clean and standardize the data so it could be used reliably in later layers.
+
+I also added a folder called t_erp_dim with a time table named t_erp_dim_time. This was not specifically requested in the challenge, but I consider it good practice to include a time dimension early on. It makes it easier to join fact tables later and allows filtering by year, month, or quarter. This table also prepares the foundation for the final d_time dimension in the star schema.
+
+2.
+Once the data layer was ready, I implemented the business logic only in the final layer of the model, which is the star schema. In this layer, I clearly defined the dimension tables and fact tables. I created a main fact table called f_spacex_launches_kpis, which can be used for general analysis related to launches, payloads, and satellites.
+
+In addition, I created another fact table specifically designed to answer the main question of the challenge.
+
+3.Regarding testing, I believe it is good practice to define tests in the star.yml file. For this challenge, I added tests to ensure that primary keys are unique and not null. I also added relationship tests between fact and dimension tables, making sure that all foreign keys in the fact tables exist in the corresponding dimension tables.
+
+I set the severity of these relationship tests to warning instead of error. At this stage, I prefer to be alerted if something is missing without breaking the entire pipeline.
+
+For documentation purposes, I added descriptions of the tables and their columns in the star schema. I also created a sources.yml file in the t_erp_spacex folder to document the origin of the data.
+
+
+## context
+While working on the challenge, I conducted some research to better understand  terms such as payloads, landpads, launchpads, and ships. Having a clearer understanding of how satellites are launched into orbit helped me design the model more accurately. Without this context, it would have been much more difficult to complete the task correctly.
+
+## important further implementation
+One important decision I made concerns the payloads table, which contains different customer names. Since the challenge focuses on Starlink satellites, I added a filter in the final fact table f_spacex_launches_kpis using a condition such as payload_name ILIKE 'Starlink%'. This ensures that the analysis is restricted to Starlink-related launches.
+
+The model could be extended in the future by adding more fact and dimension tables if additional business questions arise. If the project becomes more complex, it might make sense to introduce an intermediate layer between t_erp_spacex and the star schema, for example a t_star_layer. At this stage, however, I did not consider it necessary.
+

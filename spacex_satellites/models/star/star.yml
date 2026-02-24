@@ -93,6 +93,7 @@ models:
               to: ref('d_spacex_landpads')
               field: landpads_id
               severity: warn
+      - name: launch_date_id
       - name: is_in_orbit
       - name: launch_date_utc
         tests:
