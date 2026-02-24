@@ -117,7 +117,7 @@ fit your needs.
 ## my thoughts
 
 here below is my approach to scope the question to answer:
-1. To begin with, I focused on making the data readable and understandable before defining fact and dimension tables. Several columns were stored as JSON text, so I converted them into cleaner, readable strings. I created a first staging layer called t_erp_spacex, which contains the following tables:
+1. To begin with, I focused on making the data readable and understandable before defining fact and dimension tables. Several columns were stored as JSON text, so I converted them into cleaner, readable strings. I created a first  layer called t_erp_spacex, which contains the following tables:
 t_erp_spacex_capsule,
 t_erp_spacex_core,
 t_erp_spacex_crew,
@@ -141,8 +141,23 @@ In addition, I created another fact table specifically designed to answer the ma
 
 I set the severity of these relationship tests to warning instead of error. At this stage, I prefer to be alerted if something is missing without breaking the entire pipeline.
 
-For documentation purposes, I added descriptions of the tables and their columns in the star schema. I also created a sources.yml file in the t_erp_spacex folder to document the origin of the data.
+For documentation purposes, I added descriptions of the tables and their columns in the star schema. I also created a sources.yml file at the models root level to document the origin of the data, and a t_erp_spacex.yml file inside the t_erp_spacex folder listing all model columns.
 
+
+## answer to the challenge question
+
+To directly answer *"When will there be 42,000 Starlink satellites in orbit, and how many launches will it take?"* I built a dedicated fact table: f_starlink_projection_kpis.
+
+The table combines two parts:
+- Historical rows (is_projected = false): one row per real past Starlink launch, with the cumulative count of satellites deployed and currently in orbit
+- Projected rows (is_projected = true): future launches extrapolated using the average number of satellites per launch and the average number of days between launches, continuing until cumulative_in_orbit reaches 42,000
+
+To get the answer directly from the table:
+## sql
+SELECT launch_date, launch_number, cumulative_in_orbit
+FROM f_starlink_projection_kpis
+WHERE cumulative_in_orbit >= 42000
+ORDER BY launch_number
 
 ## context
 While working on the challenge, I conducted some research to better understand  terms such as payloads, landpads, launchpads, and ships. Having a clearer understanding of how satellites are launched into orbit helped me design the model more accurately. Without this context, it would have been much more difficult to complete the task correctly.
