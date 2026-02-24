@@ -7,6 +7,7 @@
 WITH launches_raw AS (
     SELECT
         id AS launch_id,
+        rocket AS rocket_id,
         name AS launch_name,
         date_utc AS launch_date_utc,
         success AS launch_success,
@@ -67,6 +68,7 @@ crew_flat AS (
 --  Combine all into staging table
 SELECT
     l.launch_id,
+    l.rocket_id,
     l.launch_name,
     l.launch_date_utc,
     l.launch_success,

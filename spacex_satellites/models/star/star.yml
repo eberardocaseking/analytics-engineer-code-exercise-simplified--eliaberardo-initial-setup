@@ -1,13 +1,91 @@
 version: 2
 
 models:
+  - name: d_spacex_rockets
+    columns:
+      - name: rocket_id
+      - name: rocket_name
+      - name: active
+      - name: cost_per_launch
+      - name: success_rate_pct
+
+  - name: d_spacex_landpads
+    columns:
+      - name: landpads_id
+      - name: landpads_name
+      - name: landpads_type
+      - name: landpads_locality
+      - name: landpads_landing_success_pct
+
+  - name: d_spacex_cores
+    columns:
+      - name: core_id
+      - name: serial
+      - name: status
+      - name: rtls_landings
+      - name: asds_landings
+
+  - name: d_spacex_capsules
+    columns:
+      - name: capsule_id
+      - name: status
+      - name: type
+      - name: reuse_count
+
+  - name: d_spacex_starlink
+    columns:
+      - name: satellite_id
+      - name: st_norad_cat_id
+      - name: is_in_orbit
+      - name: satellite_height_km
+
+  - name: d_spacex_payloads
+    columns:
+      - name: payloads_id
+      - name: payloads_name
+      - name: payloads_orbit
+      - name: norad_id
+
   - name: f_spacex_launches_kpis
     columns:
       - name: launch_id
+        tests:
+          - not_null
+      - name: payloads_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('d_spacex_payloads')
+              field: payloads_id
+              severity: warn
       - name: satellite_id
+        tests:
+          - relationships:
+              to: ref('d_spacex_starlink')
+              field: satellite_id
+              severity: warn
+      - name: rocket_id
+        tests:
+          - relationships:
+              to: ref('d_spacex_rockets')
+              field: rocket_id
+              severity: warn
+      - name: core_id
+        tests:
+          - relationships:
+              to: ref('d_spacex_cores')
+              field: core_id
+              severity: warn
+      - name: landpad_id
+        tests:
+          - relationships:
+              to: ref('d_spacex_landpads')
+              field: landpads_id
+              severity: warn
       - name: is_in_orbit
       - name: launch_date_utc
-      - name: payloads_name
+        tests:
+          - not_null
   - name: f_starlink_projection_kpis
     columns:
       - name: launch_id
